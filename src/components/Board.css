@@ -5,6 +5,7 @@
     width: 700px;
     height: 700px;
     outline: 2px solid black;
+    justify-content: right;
 }
 
 #board .space {
@@ -37,9 +38,19 @@
 }
 
 #board .player-space {
-    background-color: yellow;
+    background-color: blue;
 }
 
 #board .visited-space {
     background-color: black;
+}
+
+#board .game-won {
+    text-align: center;
+    color: green;
+}
+
+#board .game-over {
+    text-align: center;
+    color: red;
 }
