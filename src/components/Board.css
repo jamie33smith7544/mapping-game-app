@@ -1,0 +1,45 @@
+#board {
+    display: grid;
+    grid-template-columns: repeat(50, 14px);
+    grid-template-rows: repeat(50, 14px);
+    width: 700px;
+    height: 700px;
+    outline: 2px solid black;
+}
+
+#board .space {
+    width: 14px;
+    height: 14px;
+}
+
+#board .start-space {
+    background-color: black;
+}
+
+#board .end-space {
+    background-color: black;
+}
+
+#board .blank-space {
+    background-color: #E7D08B;
+}
+
+#board .speeder-space {
+    background-color: #a39dff;
+}
+
+#board .lava-space {
+    background-color: #E06161;
+}
+
+#board .mud-space {
+    background-color: #C98251;
+}
+
+#board .player-space {
+    background-color: yellow;
+}
+
+#board .visited-space {
+    background-color: black;
+}
