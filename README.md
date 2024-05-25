@@ -14,7 +14,7 @@ Ensure the following is installed on the machine:
 1. **Clone the repository:**
     ```bash
     git clone https://github.com/jamie33smith7544/mapping-game-app.git
-    cd your-repo-name
+    cd mapping-game-app
     ```
 
 2. **Install dependencies:**
