@@ -20,8 +20,8 @@ const createInitialBoard = (start: number, end: number) => {
             }
             // set space values
             else{
-                const number = Math.floor(Math.random() * 4); //random number for space assignment
-                type = ['blank', 'speeder', 'lava', 'mud'][number];            
+                const number = Math.floor(Math.random() * 6); //random number for space assignment (33% for blank, 16% for the rest)
+                type = ['blank', 'blank','blank','speeder', 'lava', 'mud'][number];            
             }
             
             row.push({type, visited: false});
@@ -30,19 +30,63 @@ const createInitialBoard = (start: number, end: number) => {
     }
       return board;
 }
+
 export default function CreateBoard() {
     /* Generate random start and end points*/
-    const start = Math.floor(Math.random() * 50);
-    const end = Math.floor(Math.random() * 50);
-
+    const generateStartEndPoints = () => {
+        let start = Math.floor(Math.random() * 50);
+        let end = Math.floor(Math.random() * 50);
+        return {start,end}
+    }
     
+    const {start,end} = generateStartEndPoints();
+
     /* set new board, player position, health, moves */
     const [board, setBoard] = useState(createInitialBoard(start, end));
+    const [initialBoard, setInitialBoard] = useState(board); //copy of initial board for reset
+    const [saveStart, setSaveStart] = useState(start); //copy of start position for reset
     const [playerPosition, setPlayerPosition] = useState({ x: start, y: 0 });
     const [health, setHealth] = useState(200);
     const [moves, setMoves] = useState(450);
+    const [gameOver, setGameOver] = useState(false);
+    const [gameWon, setGameWon] = useState(false);
+    const [viewMode, setViewMode] = useState(false);
+
+    /* Reset, New Game, View Game options */
+    const resetGame = () => {
+        setBoard(initialBoard)
+        setPlayerPosition({ x: saveStart, y: 0 });
+        setHealth(2000);
+        setMoves(450);
+        setGameOver(false);
+        setGameWon(false);
+        setViewMode(false);
+    }
+
+    /* generate a new game entirely */
+    const newGame = () => {
+        let {start,end} = generateStartEndPoints();
+        let newBoard = createInitialBoard(start,end);
+        setBoard(newBoard);
+        setInitialBoard(newBoard);
+        setSaveStart(start);
+        setPlayerPosition({x: start, y:0})
+        setHealth(200);
+        setMoves(450);
+        setGameOver(false);
+        setGameWon(false);
+        setViewMode(false);
+    }
+
+    /* player can view game upon gameOver or gameWon */
+    const viewGame = () => {
+        setViewMode(false);
+    };
+
 
     const handleKeyDown = (e: { key: any; }) => {
+        if (gameOver || gameWon) return;
+
         const { x, y } = playerPosition;
         let newX = x;
         let newY = y;
@@ -52,16 +96,16 @@ export default function CreateBoard() {
         /* arrow key logic to move on board */
         switch (e.key) {
             case 'ArrowUp':
-                newX = x > 0 ? x - 1 : x;
+                newX = x >= 0 ? x - 1 : x;
                 break;
             case 'ArrowRight':
-                newY = y < 49 ? y + 1 : y;
+                newY = y < 50 ? y + 1 : y;
                 break;
             case 'ArrowDown':
-                newX = x < 49 ? x + 1 : x;
+                newX = x < 50 ? x + 1 : x;
                 break;
             case 'ArrowLeft':
-                newY = y > 0 ? y - 1 : y;
+                newY = y >= 0 ? y - 1 : y;
                 break;
             
             default:
@@ -73,7 +117,8 @@ export default function CreateBoard() {
             const newBoard = board.map((row, rowIndex) =>
                 row.map((cell, colIndex) => {
                     if (rowIndex === y && colIndex === x) {
-                        return { ...cell, visited: true };
+                        
+                        return { type:'visited', visited: true };
                     }
                     return cell;
                 })
@@ -96,6 +141,10 @@ export default function CreateBoard() {
                     newHealth = health - 10;
                     newMoves = moves - 5;
                     break;
+                case 'end':
+                    setGameWon(true); // Game won condition
+                    setViewMode(true);
+                    break;
                 default:
                     newHealth = health;
                     newMoves = moves;
@@ -106,8 +155,17 @@ export default function CreateBoard() {
             setHealth(newHealth);
             setMoves(newMoves);
 
-            /*Game End conditions*/
-            
+            // Check for game LOST conditions
+            if (newHealth <= 0 || newMoves <= 0) {
+                if (newHealth <=0){
+                    setHealth(0);
+                }
+                else {
+                    setMoves(0);
+                }
+                setGameOver(true);
+                setViewMode(true);
+            }
         }
     };
 
@@ -117,13 +175,17 @@ export default function CreateBoard() {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [playerPosition, board, health, moves]);
+    }, [playerPosition, board, health, moves, gameWon, gameOver]);
 
     /* return board in div format */
     return (
         <div id="game">
-            <div id="stats">
-                <Stats health={health} moves={moves} />
+            <div id="game-status">
+                <div id="stats">
+                    <Stats health={health} moves={moves} />
+                </div>
+                <button onClick={newGame}>New Game</button>
+                <button onClick={resetGame}>Reset</button>
             </div>
             <div id="board">
                 {board.map((row, rowIndex) => (
@@ -140,10 +202,28 @@ export default function CreateBoard() {
                     </div>
                 ))}
             </div>
-            {(health <= 0 || moves <= 0) && (
-                <div className="game-over">
-                    <h1>Game Over</h1>
-                    {health <= 0 ? <p>You ran out of health!</p> : <p>You ran out of moves!</p>}
+            
+            {/* Popups for when player wins or loses game */}
+            {((health <= 0 || moves <= 0) && viewMode) && (
+                <div className="overlay">
+                    <div className="message-box">
+                        <h1>Game Over</h1>
+                        {health <= 0 ? <p>You ran out of health!</p> : <p>You ran out of moves!</p>}
+                        <button className="close-button" onClick={viewGame}>View Game</button>
+                        <button onClick={newGame}>New Game</button>
+                        <button onClick={resetGame}>Reset</button>
+                    </div>
+                </div>
+            )}
+            {gameWon && !gameOver && viewMode && (
+                <div className="overlay">
+                    <div className="message-box">
+                        <h1>Congratulations!</h1>
+                        <p>You Won!</p>
+                        <button className="close-button" onClick={viewGame}>View Game</button>
+                        <button onClick={newGame}>New Game</button>
+                        <button onClick={resetGame}>Reset</button>
+                    </div>
                 </div>
             )}
         </div>
