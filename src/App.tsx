@@ -1,5 +1,3 @@
-import './App.css';
-import Stats from "./components/Stats";
 import Board from "./components/Board";
 
 function App(){
@@ -7,7 +5,6 @@ function App(){
     <div id="game">
       <Board/>
     </div>
-    
   )
 }
 
