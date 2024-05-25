@@ -1,20 +1,18 @@
-import React from "react";
 import './Board.css';
 
 export default function createBoard () {
     let board = [];
 
-    const start = Math.floor(Math.random() * 10) + 1;
-    const end = Math.floor(Math.random() * 10) + 1;
-    for (let j = 10-1; j >= 0; j--) { //row
-        for (let i = 0; i < 10; i++) { //column
-            
+    const start = Math.floor(Math.random() * 49) + 1;
+    const end = Math.floor(Math.random() * 49) + 1;
+    for (let j = 0; j < 50; j++) { //row
+        for (let i = 0; i < 50; i++) { //column
             if (i === 0 && j === start){
                 board.push(
                     <div id="start" className="space start-space"></div>
                 );
             }
-            else if (i === 9 && j === end){
+            else if (i === 49 && j === end){
                 board.push(
                     <div id="end" className="space end-space"></div>
                 );

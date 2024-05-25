@@ -1,0 +1,14 @@
+#game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    padding: 10px;
+}
+
+#stats {
+    display: flex;
+    align-items: top;
+    justify-content: center;
+    height: auto;
+}

@@ -1,14 +1,18 @@
+import './App.css';
 import Stats from "./components/Stats";
 import Board from "./components/Board";
 
 function App(){
   return (
-    <div>
-      <Stats/>
-      <Board/>
-      <button>New Game</button>
+    <div id="game">
+      <div id="stats">
+        <Stats />
+      </div>
+      <div id="board">
+        <Board/>
+      </div>
     </div>
-
+    
   )
 }
 
