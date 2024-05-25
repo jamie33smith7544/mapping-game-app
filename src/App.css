@@ -4,11 +4,5 @@
     justify-content: center;
     height: auto;
     padding: 10px;
-}
-
-#stats {
-    display: flex;
-    align-items: top;
-    justify-content: center;
-    height: auto;
+    background-color: rgb(140, 144, 163);
 }

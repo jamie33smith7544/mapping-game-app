@@ -35,3 +35,11 @@
 #board .mud-space {
     background-color: #C98251;
 }
+
+#board .player-space {
+    background-color: yellow;
+}
+
+#board .visited-space {
+    background-color: black;
+}

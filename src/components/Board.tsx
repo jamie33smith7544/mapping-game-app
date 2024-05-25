@@ -1,48 +1,49 @@
 import './Board.css';
 
-export default function createBoard () {
-    let board = [];
+const createInitialBoard = (start: number, end: number) => {
+    const board = [];
 
-    const start = Math.floor(Math.random() * 49) + 1;
-    const end = Math.floor(Math.random() * 49) + 1;
-    for (let j = 0; j < 50; j++) { //row
-        for (let i = 0; i < 50; i++) { //column
-            if (i === 0 && j === start){
-                board.push(
-                    <div id="start" className="space start-space"></div>
-                );
+    /*Make the board. j is the row, i is the column.  Use (j,i) for (x,y) coordinates and (0,0) is top left corner*/
+    for (let j = 0; j < 50; j++) { //x axis
+        const row = [];
+        for (let i = 0; i < 50; i++) { //y axis
+            let type = 'blank';
+
+            // Set start and end
+            if (i === start && j === 0){
+                type = 'start';
             }
-            else if (i === 49 && j === end){
-                board.push(
-                    <div id="end" className="space end-space"></div>
-                );
+            else if (i === end && j === 49){
+                type = 'end';
             }
+            // set space values
             else{
-                const number = Math.floor(Math.random() * 4) + 1; //get minimum
+                const number = Math.floor(Math.random() * 4); //random number for space assignment
+                type = ['blank', 'speeder', 'lava', 'mud'][number];            
+            }
             
-                if (number === 1){
-                    board.push(
-                        <div id="blank" className="space blank-space"></div>
-                    );
-                }
-                else if (number === 2){
-                    board.push(
-                        <div id="speeder" className="space speeder-space"></div>
-                    );
-                }
-                else if (number === 3){
-                    board.push(
-                        <div id="lava" className="space lava-space"></div>
-                    );
-                }
-                else {
-                    board.push(
-                        <div id="mud" className="space mud-space"></div>
-                    );
-                }
-            }  
-        }
-      }
+            row.push({type, visitied: false});
+        } 
+        board.push(row);
+    }
+      return board;
+}
+export default function CreateBoard() {
+    /* Generate random start and end points*/
+    const start = Math.floor(Math.random() * 50);
+    const end = Math.floor(Math.random() * 50);
 
-    return <div id="board">{board}</div>;
+    const board = createInitialBoard(start, end)
+    return (
+        <div id="board">
+            {board.map((row, rowIndex) => (
+                <div key={rowIndex}>
+                    {row.map((cell, colIndex) => {
+                        let className = 'space ' + cell.type + '-space';
+                        return <div key={colIndex} className={className}></div>;
+                    })}
+                </div>
+            ))}
+        </div>
+    );
 }
