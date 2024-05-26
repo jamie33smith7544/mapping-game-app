@@ -1,9 +1,9 @@
-import Board from "./components/Board";
+import CreateBoard from "./components/GameLogic";
 
 function App(){
   return (
     <div id="game">
-      <Board/>
+      <CreateBoard/>
     </div>
   )
 }

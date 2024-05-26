@@ -1,47 +1,15 @@
 import { useEffect, useState } from 'react';
 import './Board.css';
 import Stats from './Stats';
+import { createInitialBoard, generateStartEndPoints, resetGameLogic, newGameLogic, viewGameLogic } from './GameSetup';
 
-const createInitialBoard = (start: number, end: number) => {
-    const board = [];
-
-    /*Make the board. j is the row, i is the column.  Use (j,i) for (x,y) coordinates and (0,0) is top left corner*/
-    for (let j = 0; j < 50; j++) { //x axis
-        const row = [];
-        for (let i = 0; i < 50; i++) { //y axis
-            let type = 'blank';
-
-            // Set start and end
-            if (i === start && j === 0){
-                type = 'start';
-            }
-            else if (i === end && j === 49){
-                type = 'end';
-            }
-            // set space values
-            else{
-                const number = Math.floor(Math.random() * 6); //random number for space assignment (33% for blank, 16% for the rest)
-                type = ['blank', 'blank','blank','speeder', 'lava', 'mud'][number];            
-            }
-            
-            row.push({type, visited: false});
-        } 
-        board.push(row);
-    }
-      return board;
-}
-
+/**
+ * Handles the Logic of the whole game
+ * @returns html to return of the game being played
+ */
 export default function CreateBoard() {
-    /* Generate random start and end points*/
-    const generateStartEndPoints = () => {
-        let start = Math.floor(Math.random() * 50);
-        let end = Math.floor(Math.random() * 50);
-        return {start,end}
-    }
-    
-    const {start,end} = generateStartEndPoints();
-
     /* set new board, player position, health, moves */
+    const {start,end} = generateStartEndPoints();
     const [board, setBoard] = useState(createInitialBoard(start, end));
     const [initialBoard, setInitialBoard] = useState(board); //copy of initial board for reset
     const [saveStart, setSaveStart] = useState(start); //copy of start position for reset
@@ -52,18 +20,18 @@ export default function CreateBoard() {
     const [gameWon, setGameWon] = useState(false);
     const [viewMode, setViewMode] = useState(false);
 
-    /* Reset, New Game, View Game options */
+    /* Reset, New Game, View Game function cals */
     const resetGame = () => {
-        setBoard(initialBoard)
-        setPlayerPosition({ x: saveStart, y: 0 });
-        setHealth(2000);
-        setMoves(450);
-        setGameOver(false);
-        setGameWon(false);
-        setViewMode(false);
+        const reset = resetGameLogic(initialBoard, saveStart);
+        setBoard(reset.board)
+        setPlayerPosition(reset.playerPosition);
+        setHealth(reset.health);
+        setMoves(reset.moves);
+        setGameOver(reset.gameOver);
+        setGameWon(reset.gameWon);
+        setViewMode(reset.viewMode);
     }
 
-    /* generate a new game entirely */
     const newGame = () => {
         let {start,end} = generateStartEndPoints();
         let newBoard = createInitialBoard(start,end);
@@ -78,12 +46,11 @@ export default function CreateBoard() {
         setViewMode(false);
     }
 
-    /* player can view game upon gameOver or gameWon */
     const viewGame = () => {
-        setViewMode(false);
+        setViewMode(viewGameLogic().viewMode);
     };
 
-
+    /* Handle user input from keyboard */
     const handleKeyDown = (e: { key: any; }) => {
         if (gameOver || gameWon) return;
 
@@ -113,69 +80,70 @@ export default function CreateBoard() {
         }
     
         /* update board with arrow key input */
-        if (newX !== y || newY !== x) {
-            const newBoard = board.map((row, rowIndex) =>
-                row.map((cell, colIndex) => {
-                    if (rowIndex === y && colIndex === x) {
-                        
-                        return { type:'visited', visited: true };
-                    }
-                    return cell;
-                })
-            );
-            let spaceType = board[newY][newX].type;
-            switch (spaceType){
-                case 'blank':
-                    newHealth = health;
-                    newMoves = moves - 1;
-                    break;
-                case 'speeder':
-                    newHealth = health - 5;
-                    newMoves = moves;
-                    break;
-                case 'lava':
-                    newHealth = health - 50;
-                    newMoves = moves - 10;
-                    break;
-                case 'mud':
-                    newHealth = health - 10;
-                    newMoves = moves - 5;
-                    break;
-                case 'end':
-                    setGameWon(true); // Game won condition
-                    setViewMode(true);
-                    break;
-                default:
-                    newHealth = health;
-                    newMoves = moves;
-            }
-
-            setBoard(newBoard);
-            setPlayerPosition({ x: newX, y: newY });
-            setHealth(newHealth);
-            setMoves(newMoves);
-
-            // Check for game LOST conditions
-            if (newHealth <= 0 || newMoves <= 0) {
-                if (newHealth <=0){
-                    setHealth(0);
+        const newBoard = board.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+                if (rowIndex === y && colIndex === x) {
+                    
+                    return { type:'visited', visited: true };
                 }
-                else {
-                    setMoves(0);
-                }
-                setGameOver(true);
+                return cell;
+            })
+        );
+
+        /* update health and moves */
+        let spaceType = board[newY][newX].type;
+        switch (spaceType){
+            case 'blank':
+                newHealth = health;
+                newMoves = moves - 1;
+                break;
+            case 'speeder':
+                newHealth = health - 5;
+                newMoves = moves;
+                break;
+            case 'lava':
+                newHealth = health - 50;
+                newMoves = moves - 10;
+                break;
+            case 'mud':
+                newHealth = health - 10;
+                newMoves = moves - 5;
+                break;
+            case 'end':
+                setGameWon(true); // Game won condition
                 setViewMode(true);
+                break;
+            default:
+                newHealth = health;
+                newMoves = moves;
+        }
+
+        /* update game variables */
+        setBoard(newBoard);
+        setPlayerPosition({ x: newX, y: newY });
+        setHealth(newHealth);
+        setMoves(newMoves);
+
+        /* Check for game lost conditions */
+        if (newHealth <= 0 || newMoves <= 0) {
+            if (newHealth <=0){
+                setHealth(0);
             }
+            else {
+                setMoves(0);
+            }
+            setGameOver(true);
+            setViewMode(true);
         }
     };
 
-    /* lisntener for user input on keyboard */
+    /* listener for user input on keyboard */
     useEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, [playerPosition, board, health, moves, gameWon, gameOver]);
+    }, [board, initialBoard, saveStart, playerPosition,health, moves, gameWon, gameOver, viewMode]);
 
     /* return board in div format */
     return (
