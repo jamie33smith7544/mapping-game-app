@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import CreateBoard from './components/GameLogic';
+import CreateBoard from './components/PlayGame';
 import { createInitialBoard, generateStartEndPoints, resetGameLogic, newGameLogic, viewGameLogic } from './components/GameSetup';
 
 /**

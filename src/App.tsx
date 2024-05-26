@@ -1,4 +1,4 @@
-import CreateBoard from "./components/GameLogic";
+import CreateBoard from "./components/PlayGame";
 
 function App(){
   return (

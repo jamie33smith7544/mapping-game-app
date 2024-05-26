@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './Board.css';
+import './PlayGame.css';
 import Stats from './Stats';
 import { createInitialBoard, generateStartEndPoints, resetGameLogic, newGameLogic, viewGameLogic } from './GameSetup';
 
@@ -83,8 +83,9 @@ export default function CreateBoard() {
         const newBoard = board.map((row, rowIndex) =>
             row.map((cell, colIndex) => {
                 if (rowIndex === y && colIndex === x) {
-                    
-                    return { type:'visited', visited: true };
+                    if(cell.type !== 'start'){
+                        return { type:'visited', visited: true };
+                    }
                 }
                 return cell;
             })
@@ -160,7 +161,7 @@ export default function CreateBoard() {
                     <div key={rowIndex}>
                         {row.map((cell, colIndex) => {
                             let className = 'space ' + cell.type + '-space';
-                            if (rowIndex === playerPosition.y && colIndex === playerPosition.x) {
+                            if (rowIndex === playerPosition.y && colIndex === playerPosition.x && cell.type !== 'start') {
                                 className = 'space player-space';
                             } else if (cell.visited) {
                                 className = 'space visited-space';
