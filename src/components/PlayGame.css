@@ -1,27 +1,32 @@
 #game {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    justify-content: right;
     height: 80%;
     width: 100%;
-    padding: 10px;
+    padding: 5px;
 } 
 
 #game-status {
     display: flex;
     flex-direction: column;
-    margin-right: 20%;
     padding: 5%;
+    justify-content: center;
 }
 
 #stats {
     margin-bottom: 20px;
-    
 }
 
-button {
+.game-button {
     margin-bottom: 10px;
-    padding: 5%;
+    margin-right: 5px;
+    padding: 10px 20px;
+    color: #fff; 
+    background-color: #354453; 
+}
+
+.game-button:hover {
+    background-color: #a3cdf7;
 }
 
 #board {
@@ -31,7 +36,7 @@ button {
     width: 700px;
     height: 700px;
     outline: 2px solid black;
-    justify-content: right;
+    justify-content: center;
 }
 
 #board .space {
@@ -111,6 +116,7 @@ button {
 
 .message-box {
     background: white;
+    width: 30%;
     padding: 20px;
     border-radius: 10px;
     text-align: center;

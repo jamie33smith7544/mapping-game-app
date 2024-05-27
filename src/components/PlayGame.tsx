@@ -14,7 +14,7 @@ export default function CreateBoard() {
     const [initialBoard, setInitialBoard] = useState(board); //copy of initial board for reset
     const [saveStart, setSaveStart] = useState(start); //copy of start position for reset
     const [playerPosition, setPlayerPosition] = useState({ x: start, y: 0 });
-    const [health, setHealth] = useState(200);
+    const [health, setHealth] = useState(2000);
     const [moves, setMoves] = useState(450);
     const [gameOver, setGameOver] = useState(false);
     const [gameWon, setGameWon] = useState(false);
@@ -110,6 +110,9 @@ export default function CreateBoard() {
                 newHealth = health - 10;
                 newMoves = moves - 5;
                 break;
+            case 'visited':
+                newMoves = moves - 1;
+                break;
             case 'end':
                 setGameWon(true); // Game won condition
                 setViewMode(true);
@@ -149,13 +152,6 @@ export default function CreateBoard() {
     /* return board in div format */
     return (
         <div id="game">
-            <div id="game-status">
-                <div id="stats">
-                    <Stats health={health} moves={moves} />
-                </div>
-                <button onClick={newGame}>New Game</button>
-                <button onClick={resetGame}>Reset</button>
-            </div>
             <div id="board">
                 {board.map((row, rowIndex) => (
                     <div key={rowIndex}>
@@ -178,9 +174,9 @@ export default function CreateBoard() {
                     <div className="message-box">
                         <h1>Game Over</h1>
                         {health <= 0 ? <p>You ran out of health!</p> : <p>You ran out of moves!</p>}
-                        <button className="close-button" onClick={viewGame}>View Game</button>
-                        <button onClick={newGame}>New Game</button>
-                        <button onClick={resetGame}>Reset</button>
+                        <button className="game-button" onClick={viewGame}>View Game</button>
+                        <button className="game-button" onClick={newGame}>New Game</button>
+                        <button className="game-button" onClick={resetGame}>Reset</button>
                     </div>
                 </div>
             )}
@@ -189,12 +185,19 @@ export default function CreateBoard() {
                     <div className="message-box">
                         <h1>Congratulations!</h1>
                         <p>You Won!</p>
-                        <button className="close-button" onClick={viewGame}>View Game</button>
-                        <button onClick={newGame}>New Game</button>
-                        <button onClick={resetGame}>Reset</button>
+                        <button className="game-button" onClick={viewGame}>View Game</button>
+                        <button className="game-button" onClick={newGame}>New Game</button>
+                        <button className="game-button" onClick={resetGame}>Reset</button>
                     </div>
                 </div>
             )}
+            <div id="game-status">
+                <div id="stats">
+                    <Stats health={health} moves={moves} />
+                </div>
+                <button className="game-button" onClick={newGame}>New Game</button>
+                <button className="game-button" onClick={resetGame}>Reset</button>
+            </div>
         </div>
         
     );
