@@ -1,6 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import CreateBoard from './components/PlayGame';
 import { createInitialBoard, generateStartEndPoints, resetGameLogic, newGameLogic, viewGameLogic } from './components/GameSetup';
+import { gameOverConditions, handleArrowKey, updateStats } from './components/GameLogic';
 
 /**
  * Test that the game is set up correctly
@@ -54,8 +53,42 @@ describe('Set up of game', () => {
 })
 
 
-/* TODO:
+/* 
 *  Checking arrow key movements work
 *  Checking health and moves decrease correctly based on type
-*  Checking user loses or wins correctly
+*  Game over conditions
 */
+describe('Game Play', () => {
+  test('arrow key input changes x/y coordinates correctly', () => {
+    const { x, y } = { x:5, y:5};
+    expect(handleArrowKey('ArrowUp',x, y).x).toEqual(4);
+    expect(handleArrowKey('ArrowRight',x, y).y).toEqual(6);
+    expect(handleArrowKey('ArrowDown',x, y).x).toEqual(6);
+    expect(handleArrowKey('ArrowLeft',x, y).y).toEqual(4);
+  });
+
+  test('health and moves change correclty based on type', () => {
+    const {health, moves} = {health: 50, moves: 50};
+    expect(updateStats('blank',health, moves).moves).toEqual(49);
+    expect(updateStats('speeder',health, moves).health).toEqual(45);
+    expect(updateStats('lava',health, moves).health).toEqual(0);
+    expect(updateStats('lava',health, moves).moves).toEqual(40);
+    expect(updateStats('mud',health, moves).health).toEqual(40);
+    expect(updateStats('mud',health, moves).moves).toEqual(45);
+    expect(updateStats('visited',health, moves).moves).toEqual(49);
+  });
+
+  test('game over conditions work', () => {
+    let {health, moves} = {health: 50, moves: 50};
+    expect(gameOverConditions('end', health, moves).gameWon).toEqual(true);
+
+    health = -45;
+    expect(gameOverConditions('lava', health, moves).gameOver).toEqual(true);
+
+    health = 50;
+    moves = 0;
+    expect(gameOverConditions('lava', health, moves).gameOver).toEqual(true);
+
+  });
+});
+

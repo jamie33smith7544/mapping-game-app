@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './PlayGame.css';
-import Stats from './Stats';
 import { createInitialBoard, generateStartEndPoints, resetGameLogic, newGameLogic, viewGameLogic } from './GameSetup';
+import { gameOverConditions, handleArrowKey, updateStats } from './GameLogic';
 
 /**
  * Handles the Logic of the whole game
@@ -14,13 +14,13 @@ export default function CreateBoard() {
     const [initialBoard, setInitialBoard] = useState(board); //copy of initial board for reset
     const [saveStart, setSaveStart] = useState(start); //copy of start position for reset
     const [playerPosition, setPlayerPosition] = useState({ x: start, y: 0 });
-    const [health, setHealth] = useState(2000);
+    const [health, setHealth] = useState(200);
     const [moves, setMoves] = useState(450);
     const [gameOver, setGameOver] = useState(false);
     const [gameWon, setGameWon] = useState(false);
     const [viewMode, setViewMode] = useState(false);
 
-    /* Reset, New Game, View Game function cals */
+    /* Reset, New Game, View Game function calls */
     const resetGame = () => {
         const reset = resetGameLogic(initialBoard, saveStart);
         setBoard(reset.board)
@@ -33,17 +33,16 @@ export default function CreateBoard() {
     }
 
     const newGame = () => {
-        let {start,end} = generateStartEndPoints();
-        let newBoard = createInitialBoard(start,end);
-        setBoard(newBoard);
-        setInitialBoard(newBoard);
-        setSaveStart(start);
-        setPlayerPosition({x: start, y:0})
-        setHealth(200);
-        setMoves(450);
-        setGameOver(false);
-        setGameWon(false);
-        setViewMode(false);
+        const newGame = newGameLogic();
+        setBoard(newGame.board);
+        setInitialBoard(newGame.board);
+        setSaveStart(newGame.saveStart);
+        setPlayerPosition(newGame.playerPosition);
+        setHealth(newGame.health);
+        setMoves(newGame.moves);
+        setGameOver(newGame.gameOver);
+        setGameWon(newGame.gameWon);
+        setViewMode(newGame.viewMode);
     }
 
     const viewGame = () => {
@@ -60,29 +59,16 @@ export default function CreateBoard() {
         let newHealth = health;
         let newMoves = moves;
 
-        /* arrow key logic to move on board */
-        switch (e.key) {
-            case 'ArrowUp':
-                newX = x >= 0 ? x - 1 : x;
-                break;
-            case 'ArrowRight':
-                newY = y < 50 ? y + 1 : y;
-                break;
-            case 'ArrowDown':
-                newX = x < 50 ? x + 1 : x;
-                break;
-            case 'ArrowLeft':
-                newY = y >= 0 ? y - 1 : y;
-                break;
-            
-            default:
-                break;
-        }
+        /* call function to handle key input */
+        let result = handleArrowKey(e.key, x ,y);
+        newX = result.x;
+        newY = result.y;
+
     
         /* update board with arrow key input */
-        const newBoard = board.map((row, rowIndex) =>
-            row.map((cell, colIndex) => {
-                if (rowIndex === y && colIndex === x) {
+        const newBoard = board.map((row, rowIdx) =>
+            row.map((cell, colIdx) => {
+                if (rowIdx === y && colIdx === x) {
                     if(cell.type !== 'start'){
                         return { type:'visited', visited: true };
                     }
@@ -93,52 +79,22 @@ export default function CreateBoard() {
 
         /* update health and moves */
         let spaceType = board[newY][newX].type;
-        switch (spaceType){
-            case 'blank':
-                newHealth = health;
-                newMoves = moves - 1;
-                break;
-            case 'speeder':
-                newHealth = health - 5;
-                newMoves = moves;
-                break;
-            case 'lava':
-                newHealth = health - 50;
-                newMoves = moves - 10;
-                break;
-            case 'mud':
-                newHealth = health - 10;
-                newMoves = moves - 5;
-                break;
-            case 'visited':
-                newMoves = moves - 1;
-                break;
-            case 'end':
-                setGameWon(true); // Game won condition
-                setViewMode(true);
-                break;
-            default:
-                newHealth = health;
-                newMoves = moves;
-        }
+        let updated = updateStats(spaceType, health, moves);
+        newHealth = updated.health;
+        newMoves = updated.moves;
 
         /* update game variables */
         setBoard(newBoard);
         setPlayerPosition({ x: newX, y: newY });
-        setHealth(newHealth);
-        setMoves(newMoves);
+        
 
-        /* Check for game lost conditions */
-        if (newHealth <= 0 || newMoves <= 0) {
-            if (newHealth <=0){
-                setHealth(0);
-            }
-            else {
-                setMoves(0);
-            }
-            setGameOver(true);
-            setViewMode(true);
-        }
+        /* Game over conditions */
+        let results = gameOverConditions(spaceType, newHealth, newMoves)
+        setHealth(results.health);
+        setMoves(results.moves);
+        setGameOver(results.gameOver);
+        setGameWon(results.gameWon);
+        setViewMode(results.viewMode);
     };
 
     /* listener for user input on keyboard */
@@ -149,20 +105,20 @@ export default function CreateBoard() {
         };
     }, [board, initialBoard, saveStart, playerPosition,health, moves, gameWon, gameOver, viewMode]);
 
-    /* return board in div format */
+    /* return board, stats in div format */
     return (
         <div id="game">
             <div id="board">
-                {board.map((row, rowIndex) => (
-                    <div key={rowIndex}>
-                        {row.map((cell, colIndex) => {
+                {board.map((row, rowIdx) => (
+                    <div key={rowIdx}>
+                        {row.map((cell, colIdx) => {
                             let className = 'space ' + cell.type + '-space';
-                            if (rowIndex === playerPosition.y && colIndex === playerPosition.x && cell.type !== 'start') {
+                            if (rowIdx === playerPosition.y && colIdx === playerPosition.x && cell.type !== 'start') {
                                 className = 'space player-space';
                             } else if (cell.visited) {
                                 className = 'space visited-space';
                             }
-                            return <div key={colIndex} className={className}></div>;
+                            return <div key={colIdx} className={className}></div>;
                         })}
                     </div>
                 ))}
@@ -193,7 +149,8 @@ export default function CreateBoard() {
             )}
             <div id="game-status">
                 <div id="stats">
-                    <Stats health={health} moves={moves} />
+                    <h1>Health: {health}</h1>
+                    <h1>Moves: {moves}</h1>
                 </div>
                 <button className="game-button" onClick={newGame}>New Game</button>
                 <button className="game-button" onClick={resetGame}>Reset</button>

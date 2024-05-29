@@ -18,14 +18,14 @@
 
 .color-box.start {
     background-color: #05C653;
-    background-image: url('./images/letter-a.png');
+    background-image: url('src/assets/images/letter-a.png');
     background-size: cover;
     background-position: center;
 }
 
 .color-box.end {
     background-color: #05C653;
-    background-image: url('./images/letter-b.png');
+    background-image: url('src/assets/images/letter-b.png');
     background-size: cover;
     background-position: center;
 } 
@@ -36,21 +36,21 @@
 
 .color-box.speeder {
     background-color: #cccaf3;
-    background-image: url('./images/tornado.png');
+    background-image: url('src/assets/images/tornado.png');
     background-size: cover;
     background-position: center;
 }
 
 .color-box.lava {
     background-color: #f56b6b;
-    background-image: url('./images/volcano.png');
+    background-image: url('src/assets/images/volcano.png');
     background-size: cover;
     background-position: center;
 }
 
 .color-box.mud {
     background-color: #bd9a82;
-    background-image: url('./images/mud.png');
+    background-image: url('src/assets/images/mud.png');
     background-size: cover;
     background-position: center;
 }

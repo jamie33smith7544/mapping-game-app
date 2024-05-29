@@ -15,7 +15,5 @@
 }
 
 #game-play {
-    display: flex;
-    flex-direction: column;
-    justify-content: right;
+    width: 70%;
 }
