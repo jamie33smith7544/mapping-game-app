@@ -32,8 +32,8 @@ Ensure the following is installed on the machine:
 2. **Runs on http://localhost:5173/**
 
 ## Testing
-    ```bash
-    npm test
-    ```
+```bash
+npm test
+```
 ## Resources
-Icons created by Peerapak Takpho - Flaticon (https://www.flaticon.com/)
+Icons from by Peerapak Takpho - Flaticon (https://www.flaticon.com/)
