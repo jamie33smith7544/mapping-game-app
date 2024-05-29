@@ -1,0 +1,64 @@
+#rule-section {
+    background-color: white;
+    border: 1px solid black;
+    padding: 5%;
+}
+.legend {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1px solid black;
+}
+
+.color-box.start {
+    background-color: #05C653;
+    background-image: url('src/assets/images/letter-a.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.color-box.end {
+    background-color: #05C653;
+    background-image: url('src/assets/images/letter-b.png');
+    background-size: cover;
+    background-position: center;
+} 
+
+.color-box.blank {
+    background-color: #f7eac4;
+}
+
+.color-box.speeder {
+    background-color: #cccaf3;
+    background-image: url('src/assets/images/tornado.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.color-box.lava {
+    background-color: #f56b6b;
+    background-image: url('src/assets/images/volcano.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.color-box.mud {
+    background-color: #bd9a82;
+    background-image: url('src/assets/images/mud.png');
+    background-size: cover;
+    background-position: center;
+}
+
+.color-box.current-position {
+    background-color: blue;
+}
+
+.color-box.path {
+    background-color: black;
+}

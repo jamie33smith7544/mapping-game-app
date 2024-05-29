@@ -1,0 +1,19 @@
+#app {
+    display: flex;
+    justify-content: center;
+    height: 80%;
+    width: 100%;
+}
+
+#rules {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    width: 30%;
+    padding-top: 2%; 
+    padding-left: 5%;
+}
+
+#game-play {
+    width: 70%;
+}
