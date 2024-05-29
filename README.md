@@ -1,10 +1,11 @@
 # Mapping Game
 
 ## Description
+Assignment 1: Built a front end UI with React and typescript to play the game:
 A game where the goal is to make it from the left starting point, the the right end point in 450 moves and 200 health.  
 A player uses the arrow keys to move and make a path to the other side.  The spaces are blank, speeders, lava, and mud.  Each space has its own effects to moves and health of a player
 
-This application uses react libraries and typescript.  Vite was used for project configuration.  
+*Vite was used for project configuration.  
 
 ## Prerequisites
 This application uses the React framework
